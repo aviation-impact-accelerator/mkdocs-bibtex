@@ -64,7 +64,3 @@ jobs:
         pip install -e .
         pytest --cov=mkdocs_bibtex --cov-report=xml
 
-    - uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./coverage.xml
