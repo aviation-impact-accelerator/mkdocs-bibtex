@@ -3,6 +3,7 @@ This test file checks to make sure each feature works rather than checking each
 function. Each feature should have a single test function that covers all the python
 functions it that would need to be tested
 """
+
 import os
 
 import pytest
@@ -35,7 +36,6 @@ def plugin():
     return plugin
 
 
-
 @pytest.fixture
 def plugin_advanced_pandoc(plugin):
     """
@@ -48,12 +48,10 @@ def plugin_advanced_pandoc(plugin):
         pytest.skip(f"Unsupported version of pandoc (v{pandoc_version}) installed.")
 
     plugin.config["bib_file"] = os.path.join(test_files_dir, "test.bib")
-    plugin.config["csl_file"] = os.path.join(
-        test_files_dir, "springer-basic-author-date.csl"
-    )
+    plugin.config["csl_file"] = os.path.join(test_files_dir, "springer-basic-author-date.csl")
     plugin.config["cite_inline"] = True
 
-    delattr(plugin,"last_configured")
+    delattr(plugin, "last_configured")
     plugin.on_config(plugin.config)
 
     return plugin
@@ -162,10 +160,7 @@ def test_compound_citations(plugin):
     bib = format_bibliography(quads)
 
     assert "[^1]: First Author and Second Author" in bib
-    assert (
-        "[^2]: First Author and Second Author. Test Title (TT). *Testing Journal (TJ)*, 2019"
-        in bib
-    )
+    assert "[^2]: First Author and Second Author. Test Title (TT). *Testing Journal (TJ)*, 2019" in bib
 
     assert [
         (
@@ -201,7 +196,7 @@ def test_basic_pandoc(plugin):
         "[@Bivort2016]",
         "Bivort2016",
         "1",
-        "De Bivort, B. L. & Van Swinderen, B. Evidence for selective attention in the insect brain. *Current Opinion in Insect Science* **15**, 1–7 (2016).",  # noqa: E501
+        "De Bivort, B. L. & Van Swinderen, B. [Evidence for selective attention in the insect brain](https://doi.org/10.1016/j.cois.2016.02.007). *Current Opinion in Insect Science* **15**, 1–7 (2016).",  # noqa: E501
     ) == plugin.format_citations(["[@Bivort2016]"])[0]
 
     # Test a CSL that outputs references in a different style
@@ -217,7 +212,9 @@ def test_basic_pandoc(plugin):
         "[@test_citavi]",
         "test_citavi",
         "1",
-        "Author F, Author S (2019) Test Title (TT). Testing Journal (TJ) 1:",
+        "Author F, Author S (2019) [Test Title "
+        "(TT)](\\url{https://doi.org/10.21577/0103-5053.20190253}). Testing "
+        "Journal (TJ) 1:",
     ) == plugin.format_citations(["[@test_citavi]"])[0]
 
 
@@ -228,9 +225,7 @@ def test_inline_ciations(plugin_advanced_pandoc):
     quads = [("[@test]", None, "1", None)]
     test_markdown = "Hello[@test]"
     result = "Hello (Author and Author 2019)[^1]"
-    assert result == insert_citation_keys(
-        quads, test_markdown, plugin.csl_file, plugin.bib_data.to_string("bibtex")
-    )
+    assert result == insert_citation_keys(quads, test_markdown, plugin.csl_file, plugin.bib_data.to_string("bibtex"))
 
 
 def test_supressed_authors(plugin_advanced_pandoc):
@@ -240,9 +235,7 @@ def test_supressed_authors(plugin_advanced_pandoc):
     quads = [("[-@test]", None, "1", None)]
     test_markdown = "Suppressed [-@test]"
     result = "Suppressed (2019)[^1]"
-    assert result == insert_citation_keys(
-        quads, test_markdown, plugin.csl_file, plugin.bib_data.to_string("bibtex")
-    )
+    assert result == insert_citation_keys(quads, test_markdown, plugin.csl_file, plugin.bib_data.to_string("bibtex"))
 
 
 def test_affixes(plugin_advanced_pandoc):
@@ -251,32 +244,24 @@ def test_affixes(plugin_advanced_pandoc):
     quads = [("[see @test]", None, "1", None)]
     test_markdown = "Hello[see @test]"
     result = "Hello (see Author and Author 2019)[^1]"
-    assert result == insert_citation_keys(
-        quads, test_markdown, plugin.csl_file, plugin.bib_data.to_string("bibtex")
-    )
+    assert result == insert_citation_keys(quads, test_markdown, plugin.csl_file, plugin.bib_data.to_string("bibtex"))
 
     quads = [("[@test, p. 123]", None, "1", None)]
     test_markdown = "[@test, p. 123]"
     result = " (Author and Author 2019, p. 123)[^1]"
-    assert result == insert_citation_keys(
-        quads, test_markdown, plugin.csl_file, plugin.bib_data.to_string("bibtex")
-    )
+    assert result == insert_citation_keys(quads, test_markdown, plugin.csl_file, plugin.bib_data.to_string("bibtex"))
 
     # Combined
     quads = [("[see @test, p. 123]", None, "1", None)]
     test_markdown = "Hello[see @test, p. 123]"
     result = "Hello (see Author and Author 2019, p. 123)[^1]"
-    assert result == insert_citation_keys(
-        quads, test_markdown, plugin.csl_file, plugin.bib_data.to_string("bibtex")
-    )
+    assert result == insert_citation_keys(quads, test_markdown, plugin.csl_file, plugin.bib_data.to_string("bibtex"))
 
     # Combined, suppressed author
     quads = [("[see -@test, p. 123]", None, "1", None)]
     test_markdown = "Suppressed [see -@test, p. 123]"
     result = "Suppressed (see 2019, p. 123)[^1]"
-    assert result == insert_citation_keys(
-        quads, test_markdown, plugin.csl_file, plugin.bib_data.to_string("bibtex")
-    )
+    assert result == insert_citation_keys(quads, test_markdown, plugin.csl_file, plugin.bib_data.to_string("bibtex"))
 
 
 def test_invalid_blocks(plugin_advanced_pandoc):
@@ -301,9 +286,7 @@ def test_duplicate_reference(plugin_advanced_pandoc):
     test_markdown = "[@test; @Bivort2016]"
     # CSL defines the order, this ordering is therefore expected with springer.csl
     result = " (De Bivort and Van Swinderen 2016; Author and Author 2019)[^1][^2]"
-    assert result == insert_citation_keys(
-        quads, test_markdown, plugin.csl_file, plugin.bib_data.to_string("bibtex")
-    )
+    assert result == insert_citation_keys(quads, test_markdown, plugin.csl_file, plugin.bib_data.to_string("bibtex"))
 
     quads = [
         ("[@test, p. 12; @Bivort2016, p. 15]", None, "1", None),
@@ -312,9 +295,7 @@ def test_duplicate_reference(plugin_advanced_pandoc):
     test_markdown = "[@test, p. 12; @Bivort2016, p. 15]"
     # CSL defines the order, this ordering is therefore expected with springer.csl
     result = " (De Bivort and Van Swinderen 2016, p. 15; Author and Author 2019, p. 12)[^1][^2]"
-    assert result == insert_citation_keys(
-        quads, test_markdown, plugin.csl_file, plugin.bib_data.to_string("bibtex")
-    )
+    assert result == insert_citation_keys(quads, test_markdown, plugin.csl_file, plugin.bib_data.to_string("bibtex"))
 
 
 def test_multi_reference(plugin_advanced_pandoc):
@@ -330,13 +311,10 @@ def test_multi_reference(plugin_advanced_pandoc):
     ]
     test_markdown = "Hello[@test] World [see @Bivort2016, p. 123]"
     result = "Hello (Author and Author 2019)[^1] World (see De Bivort and Van Swinderen 2016, p. 123)[^2]"
-    assert result == insert_citation_keys(
-        quads, test_markdown, plugin.csl_file, plugin.bib_data.to_string("bibtex")
-    )
+    assert result == insert_citation_keys(quads, test_markdown, plugin.csl_file, plugin.bib_data.to_string("bibtex"))
 
 
 def test_custom_footnote_formatting(plugin):
-
     assert plugin.format_footnote_key(1) == "1"
     plugin.footnote_format = "Test Format {number}"
     assert plugin.format_footnote_key(1) == "Test Format 1"
