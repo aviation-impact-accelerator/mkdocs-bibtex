@@ -54,9 +54,10 @@ def tempfile_from_zotero_url(name: str, url: str, suffix: str) -> str:
         print(repr(response.text))
         print("noauthor_notitle_nodate" in response.text)
         print(re.match(NOAUTHOR_NOTITLE_NODATE_REGEX, response.text))
-        input()
 
-        replaced_response_text = re.sub(NOAUTHOR_NOTITLE_NODATE_REGEX, "", response.text)
+        replaced_response_text = response.text.replace("\n@misc{noauthor_notitle_nodate,\n}", "")
+        print("noauthor_notitle_nodate" in replaced_response_text)
+        input()
         bib_contents += replaced_response_text
         try:
             url = response.links["next"]["url"]
