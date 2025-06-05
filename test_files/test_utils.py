@@ -83,10 +83,13 @@ def generate_bibtex_entries(n: int) -> list[str]:
 
     entries = [
         """
-@misc{noauthor_notitle_nodate
+@misc{noauthor_notitle_nodate,
 }
-@misc{noauthor_notitle_nodate
+
+
+@misc{noauthor_notitle_nodate,
 }
+
 """
     ]
 
