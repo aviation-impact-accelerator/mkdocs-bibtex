@@ -1,13 +1,10 @@
 import logging
-import re
 import requests
 import tempfile
 import urllib.parse
 
 # Grab a logger
 log = logging.getLogger("mkdocs.plugins.mkdocs-bibtex")
-
-NOAUTHOR_NOTITLE_NODATE_REGEX = re.compile(r"@misc\{noauthor_notitle_nodate(\-\d*)?,\\n*\}")
 
 
 def tempfile_from_url(name: str, url: str, suffix: str) -> str:
@@ -51,13 +48,7 @@ def tempfile_from_zotero_url(name: str, url: str, suffix: str) -> str:
             except requests.exceptions.RequestException:  # pragma: no cover
                 pass
 
-        print(repr(response.text))
-        print("noauthor_notitle_nodate" in response.text)
-        print(re.match(NOAUTHOR_NOTITLE_NODATE_REGEX, response.text))
-
         replaced_response_text = response.text.replace("\n@misc{noauthor_notitle_nodate,\n}", "")
-        print("noauthor_notitle_nodate" in replaced_response_text)
-        input()
         bib_contents += replaced_response_text
         try:
             url = response.links["next"]["url"]

@@ -81,17 +81,7 @@ def test_bibtex_loading_zotero(mock_zotero_api: responses.RequestsMock, number_o
 def generate_bibtex_entries(n: int) -> list[str]:
     """Generates n random bibtex entries."""
 
-    entries = [
-        """
-@misc{noauthor_notitle_nodate,
-}
-
-
-@misc{noauthor_notitle_nodate,
-}
-
-"""
-    ]
+    entries = []
 
     for i in range(n):
         author_first = "".join(random.choices(string.ascii_letters, k=8))
