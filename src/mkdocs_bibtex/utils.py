@@ -52,6 +52,8 @@ def tempfile_from_zotero_url(name: str, url: str, suffix: str) -> str:
                 pass
 
         print(repr(response.text))
+        print("noauthor_notitle_nodate" in response.text)
+        print(re.match(NOAUTHOR_NOTITLE_NODATE_REGEX, response.text))
         input()
 
         replaced_response_text = re.sub(NOAUTHOR_NOTITLE_NODATE_REGEX, "", response.text)
