@@ -48,7 +48,7 @@ def tempfile_from_zotero_url(name: str, url: str, suffix: str) -> str:
             except requests.exceptions.RequestException:  # pragma: no cover
                 pass
 
-        replaced_response_text = response.text.replace(r"\n@misc{noauthor_notitle_nodate\n}", "")
+        replaced_response_text = response.text.replace(r"\n@misc{noauthor_notitle_nodate,\n}", "")
         bib_contents += replaced_response_text
         try:
             url = response.links["next"]["url"]
